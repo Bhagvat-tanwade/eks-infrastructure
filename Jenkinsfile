@@ -1,5 +1,11 @@
+
 pipeline {
+
     agent any
+
+    environment {
+        AWS_DEFAULT_REGION = 'us-east-1'
+    }
 
     stages {
 
@@ -22,16 +28,39 @@ pipeline {
             }
         }
 
+        stage('AWS AUTH CHECK') {
+            steps {
+                withCredentials([
+                    [$class: 'AmazonWebServicesCredentialsBinding',
+                     credentialsId: 'aws-credentials']
+                ]) {
+                    sh 'aws sts get-caller-identity'
+                }
+            }
+        }
+
         stage('TERRAFORM PLAN') {
             steps {
-                sh 'terraform plan'
+                withCredentials([
+                    [$class: 'AmazonWebServicesCredentialsBinding',
+                     credentialsId: 'aws-credentials']
+                ]) {
+                    sh 'terraform plan'
+                }
             }
         }
 
         stage('TERRAFORM APPLY') {
             steps {
+
                 input message: 'Do you want to create EKS infrastructure?'
-                sh 'terraform apply -auto-approve'
+
+                withCredentials([
+                    [$class: 'AmazonWebServicesCredentialsBinding',
+                     credentialsId: 'aws-credentials']
+                ]) {
+                    sh 'terraform apply -auto-approve'
+                }
             }
         }
     }
