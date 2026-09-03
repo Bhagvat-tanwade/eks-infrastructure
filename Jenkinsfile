@@ -1,4 +1,5 @@
 
+```groovy
 pipeline {
 
     agent any
@@ -30,23 +31,13 @@ pipeline {
 
         stage('AWS AUTH CHECK') {
             steps {
-                withCredentials([
-                    [$class: 'AmazonWebServicesCredentialsBinding',
-                     credentialsId: 'aws-credentials']
-                ]) {
-                    sh 'aws sts get-caller-identity'
-                }
+                sh 'aws sts get-caller-identity'
             }
         }
 
         stage('TERRAFORM PLAN') {
             steps {
-                withCredentials([
-                    [$class: 'AmazonWebServicesCredentialsBinding',
-                     credentialsId: 'aws-credentials']
-                ]) {
-                    sh 'terraform plan'
-                }
+                sh 'terraform plan'
             }
         }
 
@@ -55,13 +46,9 @@ pipeline {
 
                 input message: 'Do you want to create EKS infrastructure?'
 
-                withCredentials([
-                    [$class: 'AmazonWebServicesCredentialsBinding',
-                     credentialsId: 'aws-credentials']
-                ]) {
-                    sh 'terraform apply -auto-approve'
-                }
+                sh 'terraform apply -auto-approve'
             }
         }
     }
 }
+```
