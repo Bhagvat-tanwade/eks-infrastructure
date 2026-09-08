@@ -18,17 +18,13 @@ pipeline {
 
         stage('TERRAFORM INIT') {
             steps {
-                dir('aws-services') {
-                    sh 'terraform init'
-                }
+                sh 'terraform init'
             }
         }
 
         stage('TERRAFORM VALIDATE') {
             steps {
-                dir('aws-services') {
-                    sh 'terraform validate'
-                }
+                sh 'terraform validate'
             }
         }
 
@@ -40,19 +36,14 @@ pipeline {
 
         stage('TERRAFORM PLAN') {
             steps {
-                dir('aws-services') {
-                    sh 'terraform plan'
-                }
+                sh 'terraform plan'
             }
         }
 
         stage('TERRAFORM APPLY') {
             steps {
                 input message: 'Do you want to create AWS services?'
-
-                dir('aws-services') {
-                    sh 'terraform apply -auto-approve'
-                }
+                sh 'terraform apply -auto-approve'
             }
         }
     }
